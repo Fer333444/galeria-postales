@@ -1,8 +1,12 @@
-from flask import Flask, send_from_directory, render_template_string
+from flask import Flask, send_from_directory, render_template_string, redirect
 import os
 
 app = Flask(__name__)
 CARPETA_GALERIAS = "galerias"
+
+@app.route('/')
+def inicio():
+    return redirect('/galeria/cliente123')
 
 @app.route('/galeria/<cliente>')
 def galeria(cliente):
@@ -55,7 +59,6 @@ def imagen(cliente, filename):
 @app.route('/postal/<cliente>/<imagen>')
 def ver_postal(cliente, imagen):
     ruta = f"/galeria/{cliente}/{imagen}"
-
     html = f"""
     <html>
       <head>
@@ -108,14 +111,6 @@ def ver_postal(cliente, imagen):
     </html>
     """
     return html
-from flask import redirect
-
-@app.route('/')
-def inicio():
-    return redirect('/galeria/cliente123')
-@app.route('/galeria/<cliente>')
-def galeria(cliente):
-    # tu código de galería aquí...
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
