@@ -108,6 +108,11 @@ def ver_postal(cliente, imagen):
     </html>
     """
     return html
+from flask import redirect
+
+@app.route('/')
+def inicio():
+    return redirect('/galeria/cliente123')
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
