@@ -113,6 +113,9 @@ from flask import redirect
 @app.route('/')
 def inicio():
     return redirect('/galeria/cliente123')
+@app.route('/galeria/<cliente>')
+def galeria(cliente):
+    # tu código de galería aquí...
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
