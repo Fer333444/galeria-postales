@@ -14,7 +14,7 @@ def galeria(cliente):
     if not os.path.exists(ruta):
         return f"<h1>Galería '{cliente}' no encontrada</h1>", 404
 
-    imagenes = [f for f in os.listdir(ruta) if f.startswith("postcard_final") and f.endswith(".jpg")]
+    imagenes = [f for f in os.listdir(ruta) if f.endswith(".jpg") or f.endswith(".png")]
 
     html = f"""
     <html>
