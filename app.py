@@ -67,34 +67,34 @@ def ver_postal(cliente, imagen):
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
+            padding-top: 30px;
           }}
           .postal img {{
             width: 90%;
-            max-width: 768px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.9);
+            margin-bottom: 30px;
           }}
           .btn {{
-            margin-top: 20px;
-            padding: 12px 24px;
-            background: #28a745;
-            color: white;
+            display: block;
+            margin: 10px auto;
+            padding: 18px 36px;
+            border-radius: 8px;
+            font-size: 18px;
             font-weight: bold;
-            font-size: 16px;
+            color: white;
             text-decoration: none;
-            border-radius: 6px;
+            text-align: center;
+            width: 250px;
           }}
-          .btn-back {{
-            margin-top: 10px;
-            padding: 10px 22px;
-            background: #007bff;
-            color: white;
-            font-weight: bold;
-            font-size: 15px;
-            border-radius: 6px;
-            text-decoration: none;
+          .btn-green {{
+            background-color: #28a745;
+          }}
+          .btn-blue {{
+            background-color: #007bff;
           }}
         </style>
       </head>
@@ -102,8 +102,8 @@ def ver_postal(cliente, imagen):
         <div class="postal">
           <img src="{ruta}" />
         </div>
-        <a href="{ruta}" download class="btn"⬇️ Descargar imagen</a>
-        <a href="/galeria/{cliente}" class="btn-back">⬅️ Volver a la galería</a>
+        <a href="{ruta}" download class="btn btn-green">⬇️ DOWNLOAD</a>
+        <a href="/galeria/{cliente}" class="btn btn-blue">⬅️ BACK</a>
       </body>
     </html>
     """
