@@ -7,16 +7,16 @@ app = Flask(__name__)
 CARPETA_GALERIAS = "galerias"
 @app.route('/buscar')
 def buscar_codigo():
-    codigo = request.args.get("codigo", "").strip().lstrip("#")
+    codigo = request.args.get("codigo", "").replace("#", "").strip()
     try:
         with open("codigos_postales.txt", "r") as f:
             for linea in f:
-                hash, nombre = linea.strip().split("|")
-                if hash == codigo:
-                    return redirect(f"/postal/cliente123/{nombre}")
-    except:
-        pass
-    return "<h1 style='color:red;'>❌ Error al buscar el código</h1>"
+                if linea.startswith(codigo):
+                    _, imagen = linea.strip().split(" ", 1)
+                    return redirect(f"/postal/cliente123/postcard_final_{imagen}")
+        return "<h1 style='color:red;'>❌ Código no encontrado</h1>"
+    except Exception as e:
+        return f"<h1 style='color:red;'>❌ Error al buscar el código</h1><p>{e}</p>"
 
 @app.route('/')
 def inicio():
@@ -78,7 +78,7 @@ def galeria(cliente):
         <h2>📸 GALERIA POST CARD</h2>
         <div class="busqueda">
           <form action="/buscar">
-            <input type="text" name="codigo" placeholder="Ingresa código de postal" />
+            <input type="text" name="codigo" placeholder="Ingresa código de postal" oninput="this.value=this.value.replace('#', '')" />
             <button type="submit">Buscar</button>
           </form>
         </div>
