@@ -14,7 +14,7 @@ def buscar_codigo():
             for linea in f:
                 if linea.startswith(codigo):
                     _, imagen = linea.strip().split(" ", 1)
-                    return redirect(f"/postal/cliente123/postcard_final_{imagen}")
+                    return redirect(f"/postal/cliente123/{quote('postcard_final_' + imagen)}")
         return "<h1 style='color:red;'>❌ Código no encontrado</h1>"
     except Exception as e:
         return f"<h1 style='color:red;'>❌ Error al buscar el código</h1><p>{e}</p>"
