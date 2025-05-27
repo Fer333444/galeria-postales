@@ -2,10 +2,10 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 
 # Coordenadas exactas del recuadro
-x = 45
-y = 58
-w = 285
-h = 345
+x = 110
+y = 200
+w = 520
+h = 680
 
 def generar_postal(nombre_imagen):
     """
