@@ -1,33 +1,41 @@
 from PIL import Image, ImageDraw, ImageFont
 import os
+import uuid
 
-# Coordenadas exactas del recuadro
-x = 110
-y = 200
-w = 520
-h = 680
+# Carpeta y fondo
+carpeta = "galerias/cliente123"
+fondo = os.path.join(carpeta, "postal.jpg")
 
-def generar_postal(nombre_imagen):
-    """
-    Genera una postal a partir de la imagen recibida.
-    nombre_imagen: str, el nombre de la imagen dentro de la carpeta del cliente (sin ruta completa)
-    """
-    carpeta = "galerias/cliente123"
-    fondo = os.path.join(carpeta, "postal.jpg")
-    ruta_imagen = os.path.join(carpeta, nombre_imagen)
-    salida = os.path.join(carpeta, f"postcard_final_{nombre_imagen}")
+# Coordenadas para imagen
+x, y = 110, 200
+w, h = 520, 680
 
-    try:
-        fondo_postal = Image.open(fondo).convert("RGB")
-        imagen = Image.open(ruta_imagen).convert("RGB")
-        imagen = imagen.resize((w, h), Image.LANCZOS)
+# Fuente para el código (usa una genérica del sistema si no tienes ttf personalizada)
+try:
+    fuente = ImageFont.truetype("arial.ttf", 24)
+except:
+    fuente = ImageFont.load_default()
 
-        # Pegamos imagen encima del fondo postal
-        fondo_postal.paste(imagen, (x, y))
+def generar_postal(nombre_img):
+    if nombre_img.startswith("postcard_final_") or not nombre_img.lower().endswith(".jpg"):
+        return  # ignora postales ya procesadas o archivos inválidos
 
-        # Guardamos imagen final
-        fondo_postal.save(salida)
-        print(f"✅ Postal generada: {salida}")
+    ruta_img = os.path.join(carpeta, nombre_img)
+    salida = os.path.join(carpeta, f"postcard_final_{nombre_img}")
+    fondo_postal = Image.open(fondo).convert("RGB")
+    imagen = Image.open(ruta_img).convert("RGB")
+    imagen = imagen.resize((w, h), Image.LANCZOS)
 
-    except Exception as e:
-        print(f"❌ Error con {nombre_imagen}: {e}")
+    fondo_postal.paste(imagen, (x, y))
+
+    # Código único
+    codigo = str(uuid.uuid4())[:8]
+    draw = ImageDraw.Draw(fondo_postal)
+    draw.text((x, y + h + 10), f"#{codigo}", fill="black", font=fuente)
+
+    fondo_postal.save(salida)
+    print(f"✅ Postal generada con código #{codigo}: {salida}")
+
+    # Guardar código para futuras búsquedas
+    with open("codigos_postales.txt", "a") as f:
+        f.write(f"{codigo},{os.path.basename(salida)}\n")
