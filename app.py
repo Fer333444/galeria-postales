@@ -1,23 +1,9 @@
-from flask import Flask, send_from_directory, render_template_string, redirect, request
+from flask import Flask, send_from_directory, render_template_string, request, redirect
 import os
+import re
 
 app = Flask(__name__)
 CARPETA_GALERIAS = "galerias"
-import re
-from flask import request, redirect
-
-@app.route('/buscar')
-def buscar_codigo():
-    codigo = request.args.get("codigo", "").lower().strip()
-    codigo = re.sub(r'^#+', '', codigo)  # Eliminar uno o más "#" al inicio
-
-    cliente = "cliente123"
-    ruta = os.path.join(CARPETA_GALERIAS, cliente)
-    for archivo in os.listdir(ruta):
-        if archivo.lower().endswith(".jpg") and archivo.startswith(f"postcard_final_{codigo}"):
-            return redirect(f"/postal/{cliente}/{archivo}")
-
-    return "<h1 style='color:red;'>❌ Código no encontrado</h1>", 404
 
 @app.route('/')
 def inicio():
@@ -29,10 +15,7 @@ def galeria(cliente):
     if not os.path.exists(ruta):
         return f"<h1>Galería '{cliente}' no encontrada</h1>", 404
 
-    imagenes = [
-        f for f in os.listdir(ruta)
-        if f.startswith("postcard_final") and f.endswith(".jpg")
-    ]
+    imagenes = [f for f in os.listdir(ruta) if f.startswith("postcard_final") and f.endswith(".jpg")]
 
     html = f"""
     <html>
@@ -53,31 +36,40 @@ def galeria(cliente):
           }}
           .postal img {{
             width: 100%;
-            max-width: 300px;
+            max-width: 280px;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0,0,0,0.3);
           }}
-          form {{
-            margin-top: 20px;
+          .busqueda {{
+            margin-top: 15px;
+            margin-bottom: 10px;
           }}
-          input[type='text'] {{
+          input[type=text] {{
             padding: 10px;
             font-size: 16px;
-            width: 200px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
           }}
           button {{
-            padding: 10px;
-            font-size: 16px;
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
           }}
         </style>
       </head>
       <body>
         <h2>📸 GALERIA POST CARD</h2>
-        <form method="get" action="/buscar">
-          <input type="text" name="codigo" placeholder="🔎 Buscar código">
-          <button type="submit">Buscar</button>
-        </form>
-        <p style="color:gray;">Toca una postal, mantenla presionada y guárdala en tu galería 📥</p>
+        <div class="busqueda">
+          <form action="/buscar">
+            <input type="text" name="codigo" placeholder="Ingresa código de postal" />
+            <button type="submit">Buscar</button>
+          </form>
+        </div>
+        <p style="color:gray;">Toca una postal, mantenla presionada y guárdala en tu galería 📅</p>
         <div class="galeria">
           {"".join(f"<a href='/postal/{cliente}/{img}'><div class='postal'><img src='/galeria/{cliente}/{img}'></div></a>" for img in imagenes)}
         </div>
@@ -111,29 +103,23 @@ def ver_postal(cliente, imagen):
           }}
           .postal img {{
             width: 90%;
-            max-width: 500px;
+            max-width: 400px;
             border-radius: 12px;
             box-shadow: 0 0 25px rgba(0,0,0,0.9);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
           }}
           .btn {{
             display: inline-block;
-            margin: 10px 10px;
-            padding: 18px 36px;
-            border-radius: 8px;
-            font-size: 18px;
+            margin: 10px;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
             font-weight: bold;
             color: white;
             text-decoration: none;
-            text-align: center;
-            width: 180px;
           }}
-          .btn-green {{
-            background-color: #28a745;
-          }}
-          .btn-blue {{
-            background-color: #007bff;
-          }}
+          .btn-green {{ background-color: #28a745; }}
+          .btn-blue {{ background-color: #007bff; }}
         </style>
       </head>
       <body>
@@ -148,18 +134,18 @@ def ver_postal(cliente, imagen):
     return html
 
 @app.route('/buscar')
-def buscar():
-    codigo = request.args.get('codigo', '')
-    if not os.path.exists('codigos_postales.txt'):
-        return "<h1>⚠️ Base de códigos no encontrada</h1>"
+def buscar_codigo():
+    codigo = request.args.get("codigo", "").lower().strip()
+    codigo = re.sub(r'^#+', '', codigo)  # Eliminar uno o más # al inicio
 
-    with open("codigos_postales.txt") as f:
-        for linea in f:
-            if codigo in linea:
-                cliente, imagen = linea.strip().split("::")
-                return redirect(f"/postal/{cliente}/{imagen}")
-    return "<h1>❌ Código no encontrado</h1>"
+    cliente = "cliente123"
+    ruta = os.path.join(CARPETA_GALERIAS, cliente)
+    for archivo in os.listdir(ruta):
+        if archivo.lower().endswith(".jpg") and archivo.startswith(f"postcard_final_{codigo}"):
+            return redirect(f"/postal/{cliente}/{archivo}")
 
-if __name__ == "__main__":
+    return "<h1 style='color:red;'>❌ Código no encontrado</h1>", 404
+
+if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=False, host='0.0.0.0', port=port)
