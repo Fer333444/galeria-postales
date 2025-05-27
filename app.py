@@ -25,11 +25,11 @@ def inicio():
 
 @app.route('/galeria/<cliente>')
 def galeria(cliente):
-    ruta = os.path.join(CARPETA_GALERIAS, cliente)
-    if not os.path.exists(ruta):
+    carpeta = os.path.join("galerias", cliente)
+    if not os.path.exists(carpeta):
         return f"<h1>Galería '{cliente}' no encontrada</h1>", 404
 
-    imagenes = [f for f in os.listdir(ruta) if f.startswith("postcard_final") and f.endswith(".jpg")]
+    imagenes = [f for f in os.listdir(carpeta) if f.startswith("postcard_final") and f.endswith(".jpg")]
 
     html = f"""
     <html>
