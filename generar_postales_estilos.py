@@ -2,40 +2,39 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 import uuid
 
-# Carpeta y fondo
-carpeta = "galerias/cliente123"
-fondo = os.path.join(carpeta, "postal.jpg")
+def generar_postal(nombre_imagen):
+    carpeta = "galerias/cliente123"
+    fondo_path = os.path.join(carpeta, "postal.jpg")
+    imagen_path = os.path.join(carpeta, nombre_imagen)
 
-# Coordenadas para imagen
-x, y = 110, 200
-w, h = 520, 680
+    if not os.path.exists(fondo_path) or not os.path.exists(imagen_path):
+        print("❌ No se encontró postal.jpg o la imagen original.")
+        return
 
-# Fuente para el código (usa una genérica del sistema si no tienes ttf personalizada)
-try:
-    fuente = ImageFont.truetype("arial.ttf", 24)
-except:
-    fuente = ImageFont.load_default()
+    # Abrir imágenes
+    fondo = Image.open(fondo_path).convert("RGB")
+    imagen = Image.open(imagen_path).convert("RGB")
 
-def generar_postal(nombre_img):
-    if nombre_img.startswith("postcard_final_") or not nombre_img.lower().endswith(".jpg"):
-        return  # ignora postales ya procesadas o archivos inválidos
-
-    ruta_img = os.path.join(carpeta, nombre_img)
-    salida = os.path.join(carpeta, f"postcard_final_{nombre_img}")
-    fondo_postal = Image.open(fondo).convert("RGB")
-    imagen = Image.open(ruta_img).convert("RGB")
+    # Redimensionar imagen al espacio en la postal
+    x, y, w, h = 110, 200, 520, 680
     imagen = imagen.resize((w, h), Image.LANCZOS)
 
-    fondo_postal.paste(imagen, (x, y))
+    # Pegar imagen sobre la postal
+    fondo.paste(imagen, (x, y))
 
-    # Código único
+    # Generar código único
     codigo = str(uuid.uuid4())[:8]
-    draw = ImageDraw.Draw(fondo_postal)
-    draw.text((x, y + h + 10), f"#{codigo}", fill="black", font=fuente)
 
-    fondo_postal.save(salida)
-    print(f"✅ Postal generada con código #{codigo}: {salida}")
+    # Dibujar el código en la parte inferior izquierda
+    draw = ImageDraw.Draw(fondo)
+    font_path = "arial.ttf"
+    if os.path.exists(font_path):
+        font = ImageFont.truetype(font_path, 28)
+    else:
+        font = ImageFont.load_default()
+    draw.text((50, 520), f"#{codigo}", fill="black", font=font)
 
-    # Guardar código para futuras búsquedas
-    with open("codigos_postales.txt", "a") as f:
-        f.write(f"{codigo},{os.path.basename(salida)}\n")
+    # Guardar postal con nuevo nombre
+    salida = os.path.join(carpeta, f"postcard_final_{nombre_imagen}")
+    fondo.save(salida)
+    print(f"✅ Postal guardada: {salida} con código #{codigo}")
