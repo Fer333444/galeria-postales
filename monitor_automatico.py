@@ -2,6 +2,7 @@ import os
 import time
 import subprocess
 from dotenv import load_dotenv
+import cloudinary.api
 import cloudinary
 import cloudinary.uploader
 from generar_postales_estilos import generar_postal
@@ -49,6 +50,26 @@ def hacer_push():
 if os.path.exists("archivos_vistos.txt"):
     with open("archivos_vistos.txt", "r") as f:
         archivos_vistos = set(f.read().splitlines())
+def eliminar_postales_inexistentes_en_cloudinary():
+    print("🧹 Revisando postales antiguas en Cloudinary...")
+    try:
+        from cloudinary.api import resources
+        resultado = cloudinary.api.resources(type="upload", prefix="galerias/cliente123/postcard_final_", max_results=500)
+        existentes_cloudinary = resultado.get("resources", [])
+
+        for recurso in existentes_cloudinary:
+            public_id = recurso["public_id"]
+            nombre_archivo = os.path.basename(public_id) + ".jpg"
+            ruta_local = os.path.join(carpeta, nombre_archivo)
+
+            if not os.path.exists(ruta_local):
+                cloudinary.uploader.destroy(public_id)
+                print(f"🗑️ Eliminada de Cloudinary: {public_id}")
+    except Exception as e:
+        print("❌ Error al eliminar postales viejas de Cloudinary:", e)
+
+# Llamar una vez al iniciar (o periódicamente si deseas)
+eliminar_postales_inexistentes_en_cloudinary()
 
 print("🔄 Esperando nuevas imágenes...")
 
