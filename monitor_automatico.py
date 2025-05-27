@@ -13,7 +13,6 @@ INTERVALO = 3  # segundos
 
 # Cargar variables de entorno desde .env
 load_dotenv()
-
 cloudinary.config(
     cloud_name=os.getenv("CLOUD_NAME"),
     api_key=os.getenv("API_KEY"),
@@ -46,28 +45,37 @@ def hacer_push():
     except Exception as e:
         print("❌ Error haciendo push:", e)
 
-# Cargar archivos ya existentes
+# Cargar imágenes ya vistas (si existe)
 if os.path.exists("archivos_vistos.txt"):
     with open("archivos_vistos.txt", "r") as f:
         archivos_vistos = set(f.read().splitlines())
 
 print("🔄 Esperando nuevas imágenes...")
 
-# Monitor en bucle
+# Bucle principal
 while True:
     nuevos = []
+
+    # Verifica todas las imágenes en la carpeta
     for archivo in os.listdir(carpeta):
-        # ✅ Ignorar archivos que ya son postales o que no son .jpg
         if archivo.startswith("postcard_final_") or not archivo.lower().endswith(".jpg"):
             continue
-
         if archivo not in archivos_vistos:
             print(f"🖼️ Nueva imagen detectada: {archivo}")
             nuevos.append(archivo)
             archivos_vistos.add(archivo)
             generar_y_subir(archivo)
 
-    # Guardar archivo de vistos
+    # 🧹 Eliminar postales que ya no tienen su imagen original
+    imagenes_originales = {img for img in os.listdir(carpeta) if img.lower().endswith(".jpg") and not img.startswith("postcard_final_")}
+    for archivo in os.listdir(carpeta):
+        if archivo.startswith("postcard_final_"):
+            nombre_original = archivo.replace("postcard_final_", "")
+            if nombre_original not in imagenes_originales:
+                os.remove(os.path.join(carpeta, archivo))
+                print(f"🗑️ Postal eliminada: {archivo}")
+
+    # Guardar los archivos vistos
     with open("archivos_vistos.txt", "w") as f:
         f.write("\n".join(archivos_vistos))
 
