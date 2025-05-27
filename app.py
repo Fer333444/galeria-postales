@@ -3,6 +3,21 @@ import os
 
 app = Flask(__name__)
 CARPETA_GALERIAS = "galerias"
+import re
+from flask import request, redirect
+
+@app.route('/buscar')
+def buscar_codigo():
+    codigo = request.args.get("codigo", "").lower().strip()
+    codigo = re.sub(r'^#+', '', codigo)  # Eliminar uno o más "#" al inicio
+
+    cliente = "cliente123"
+    ruta = os.path.join(CARPETA_GALERIAS, cliente)
+    for archivo in os.listdir(ruta):
+        if archivo.lower().endswith(".jpg") and archivo.startswith(f"postcard_final_{codigo}"):
+            return redirect(f"/postal/{cliente}/{archivo}")
+
+    return "<h1 style='color:red;'>❌ Código no encontrado</h1>", 404
 
 @app.route('/')
 def inicio():
