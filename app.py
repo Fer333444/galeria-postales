@@ -59,6 +59,7 @@ def imagen(cliente, filename):
 @app.route('/postal/<cliente>/<imagen>')
 def ver_postal(cliente, imagen):
     ruta = f"/galeria/{cliente}/{imagen}"
+
     html = f"""
     <html>
       <head>
@@ -72,41 +73,43 @@ def ver_postal(cliente, imagen):
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
-            padding-top: 30px;
+            padding-top: 20px;
           }}
           .postal img {{
-            width: 90%;
-            max-width: 500px;
+            width: 95%;
+            max-width: 700px;
             border-radius: 12px;
             box-shadow: 0 0 25px rgba(0,0,0,0.9);
             margin-bottom: 30px;
           }}
+          .botones {{
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+          }}
           .btn {{
-            display: block;
-            margin: 10px auto;
-            padding: 18px 36px;
+            padding: 16px 32px;
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: white;
             text-decoration: none;
             text-align: center;
-            width: 250px;
+            min-width: 140px;
           }}
-          .btn-green {{
-            background-color: #28a745;
-          }}
-          .btn-blue {{
-            background-color: #007bff;
-          }}
+          .btn-green {{ background-color: #28a745; }}
+          .btn-blue {{ background-color: #007bff; }}
         </style>
       </head>
       <body>
         <div class="postal">
           <img src="{ruta}" />
         </div>
-        <a href="{ruta}" download class="btn btn-green">⬇️ DOWNLOAD</a>
-        <a href="/galeria/{cliente}" class="btn btn-blue">⬅️ BACK</a>
+        <div class="botones">
+          <a href="{ruta}" download class="btn btn-green">⬇️ DOWNLOAD</a>
+          <a href="/galeria/{cliente}" class="btn btn-blue">⬅️ BACK</a>
+        </div>
       </body>
     </html>
     """
