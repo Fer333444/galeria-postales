@@ -50,3 +50,17 @@ def generar_postal(imagen):
 
     except Exception as e:
         print(f"❌ Error con {imagen}: {e}")
+import hashlib
+
+# Al final de tu bucle for:
+    # Código hash único por imagen
+    hash_codigo = hashlib.sha1(archivo.encode()).hexdigest()[:8]
+    
+    # Dibujar código en la postal
+    draw = ImageDraw.Draw(fondo_postal)
+    font = ImageFont.truetype("arial.ttf", 24)
+    draw.text((20, fondo_postal.height - 40), f"#{hash_codigo}", fill="black", font=font)
+
+    # Guardar relación código <-> nombre
+    with open("codigos_postales.txt", "a") as f:
+        f.write(f"{hash_codigo}|{os.path.basename(salida)}\n")

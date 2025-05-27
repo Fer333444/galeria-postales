@@ -5,6 +5,18 @@ import re
 
 app = Flask(__name__)
 CARPETA_GALERIAS = "galerias"
+@app.route('/buscar')
+def buscar_codigo():
+    codigo = request.args.get("codigo", "").strip().lstrip("#")
+    try:
+        with open("codigos_postales.txt", "r") as f:
+            for linea in f:
+                hash, nombre = linea.strip().split("|")
+                if hash == codigo:
+                    return redirect(f"/postal/cliente123/{nombre}")
+    except:
+        pass
+    return "<h1 style='color:red;'>❌ Error al buscar el código</h1>"
 
 @app.route('/')
 def inicio():
@@ -133,21 +145,6 @@ def ver_postal(cliente, imagen):
     </html>
     """
     return html
-
-@app.route("/buscar")
-def buscar():
-    codigo = request.args.get("codigo", "").strip()
-    try:
-        with open("codigos.json", "r") as f:
-            codigos = json.load(f)
-        if codigo in codigos:
-            imagen = codigos[codigo]
-            cliente = "cliente123"
-            return redirect(f"/postal/{cliente}/{imagen}")
-        else:
-            return "<h1 style='color:red'>❌ Código no encontrado</h1>"
-    except:
-        return "<h1 style='color:red'>❌ Error al buscar el código</h1>"
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
