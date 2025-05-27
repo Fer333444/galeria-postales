@@ -1,5 +1,5 @@
 from flask import Flask, send_from_directory, render_template_string, request, redirect
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 from flask import request
 import os
 import re
@@ -94,11 +94,13 @@ return render_template_string(html)
 
 @app.route('/galeria/<cliente>/<filename>')
 def imagen(cliente, filename):
+    filename = unquote(filename)
     return send_from_directory(os.path.join(CARPETA_GALERIAS, cliente), filename)
 
 @app.route('/postal/<cliente>/<imagen>')
 def ver_postal(cliente, imagen):
-    ruta = f"/galeria/{cliente}/{imagen}"
+    imagen = unquote(imagen)
+    ruta = f"/galeria/{cliente}/{quote(imagen)}"
 
     html = f"""
     <html>
