@@ -10,7 +10,7 @@ while True:
     nuevas = actuales - vistas
 
     for archivo in nuevas:
-        if archivo.endswith(".jpg") and not archivo.startswith("postcard_final"):
+        if archivo.lower().endswith((".jpg", ".jpeg", ".png")):
             print(f"🆕 Nueva imagen detectada: {archivo}")
 
             # 👉 Subir a Cloudinary y generar postal
