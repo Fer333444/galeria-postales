@@ -57,7 +57,11 @@ print("🔄 Esperando nuevas imágenes...")
 while True:
     nuevos = []
     for archivo in os.listdir(carpeta):
-        if archivo.lower().endswith((".jpg", ".jpeg", ".png")) and archivo not in archivos_vistos:
+        # ✅ Ignorar archivos que ya son postales o que no son .jpg
+        if archivo.startswith("postcard_final_") or not archivo.lower().endswith(".jpg"):
+            continue
+
+        if archivo not in archivos_vistos:
             print(f"🖼️ Nueva imagen detectada: {archivo}")
             nuevos.append(archivo)
             archivos_vistos.add(archivo)
