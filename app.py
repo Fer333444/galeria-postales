@@ -32,65 +32,65 @@ def galeria(cliente):
     imagenes = [f for f in os.listdir(carpeta) if f.startswith("postcard_final") and f.endswith(".jpg")]
 
     html = f"""
-<html>
-  <head>
-    <title>GALERIA POST CARD</title>
-    <style>
-      body {{
-        font-family: sans-serif;
-        background: #f8f8f8;
-        text-align: center;
-      }}
-      .galeria {{
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 30px;
-        margin-top: 30px;
-      }}
-      .postal img {{
-        width: 100%;
-        max-width: 280px;
-        border-radius: 10px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      }}
-      .busqueda {{
-        margin-top: 15px;
-        margin-bottom: 10px;
-      }}
-      input[type=text] {{
-        padding: 10px;
-        font-size: 16px;
-        border: 2px solid #ccc;
-        border-radius: 6px;
-      }}
-      button {{
-        padding: 10px 20px;
-        background: #333;
-        color: white;
-        font-weight: bold;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      }}
-    </style>
-  </head>
-  <body>
-    <h2>📸 GALERIA POST CARD</h2>
-    <div class="busqueda">
-      <form action="/buscar">
-        <input type="text" name="codigo" placeholder="Ingresa código de postal" oninput="this.value=this.value.replace('#', '')" />
-        <button type="submit">Buscar</button>
-      </form>
-    </div>
-    <p style="color:gray;">Toca una postal, mantenla presionada y guárdala en tu galería 📅</p>
-    <div class="galeria">
-      {"".join(f"<a href='/postal/{cliente}/{quote(img)}'><div class='postal'><img src='/galeria/{cliente}/{quote(img)}'></div></a>" for img in imagenes)}
-    </div>
-  </body>
-</html>
-"""
-return render_template_string(html)
+    <html>
+      <head>
+        <title>GALERIA POST CARD</title>
+        <style>
+          body {{
+            font-family: sans-serif;
+            background: #f8f8f8;
+            text-align: center;
+          }}
+          .galeria {{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+          }}
+          .postal img {{
+            width: 100%;
+            max-width: 280px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+          }}
+          .busqueda {{
+            margin-top: 15px;
+            margin-bottom: 10px;
+          }}
+          input[type=text] {{
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+          }}
+          button {{
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+          }}
+        </style>
+      </head>
+      <body>
+        <h2>📸 GALERIA POST CARD</h2>
+        <div class="busqueda">
+          <form action="/buscar">
+            <input type="text" name="codigo" placeholder="Ingresa código de postal" oninput="this.value=this.value.replace('#', '')" />
+            <button type="submit">Buscar</button>
+          </form>
+        </div>
+        <p style="color:gray;">Toca una postal, mantenla presionada y guárdala en tu galería 📅</p>
+        <div class="galeria">
+          {"".join(f"<a href='/postal/{cliente}/{quote(img)}'><div class='postal'><img src='/galeria/{cliente}/{quote(img)}'></div></a>" for img in imagenes)}
+        </div>
+      </body>
+    </html>
+    """
+    return render_template_string(html)
 
 @app.route('/galeria/<cliente>/<filename>')
 def imagen(cliente, filename):
