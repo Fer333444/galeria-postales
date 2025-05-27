@@ -1,40 +1,52 @@
-from PIL import Image, ImageDraw, ImageFont
+import json
 import os
-import uuid
+import hashlib
+from PIL import Image, ImageDraw, ImageFont
 
-def generar_postal(nombre_imagen):
-    carpeta = "galerias/cliente123"
-    fondo_path = os.path.join(carpeta, "postal.jpg")
-    imagen_path = os.path.join(carpeta, nombre_imagen)
+# Ruta
+carpeta = "galerias/cliente123"
+fondo = os.path.join(carpeta, "postal.jpg")
 
-    if not os.path.exists(fondo_path) or not os.path.exists(imagen_path):
-        print("❌ No se encontró postal.jpg o la imagen original.")
+# Coordenadas imagen sobre postal
+x, y = 110, 200
+w, h = 520, 680
+
+# Cargar códigos previos
+json_codigos = "codigos.json"
+if os.path.exists(json_codigos):
+    with open(json_codigos, "r") as f:
+        codigos = json.load(f)
+else:
+    codigos = {}
+
+# Función principal
+def generar_postal(imagen):
+    if imagen.startswith("postcard_final_") or not imagen.lower().endswith(".jpg"):
         return
 
-    # Abrir imágenes
-    fondo = Image.open(fondo_path).convert("RGB")
-    imagen = Image.open(imagen_path).convert("RGB")
+    ruta_imagen = os.path.join(carpeta, imagen)
+    salida = os.path.join(carpeta, f"postcard_final_{imagen}")
 
-    # Redimensionar imagen al espacio en la postal
-    x, y, w, h = 110, 200, 520, 680
-    imagen = imagen.resize((w, h), Image.LANCZOS)
+    try:
+        fondo_postal = Image.open(fondo).convert("RGB")
+        img = Image.open(ruta_imagen).convert("RGB")
+        img = img.resize((w, h), Image.LANCZOS)
 
-    # Pegar imagen sobre la postal
-    fondo.paste(imagen, (x, y))
+        fondo_postal.paste(img, (x, y))
 
-    # Generar código único
-    codigo = str(uuid.uuid4())[:8]
+        # ✅ Código hash único por imagen
+        codigo = "#" + hashlib.md5(imagen.encode()).hexdigest()[:8]
+        font = ImageFont.truetype("arial.ttf", 22)
+        draw = ImageDraw.Draw(fondo_postal)
+        draw.text((40, 420), codigo, fill="black", font=font)
 
-    # Dibujar el código en la parte inferior izquierda
-    draw = ImageDraw.Draw(fondo)
-    font_path = "arial.ttf"
-    if os.path.exists(font_path):
-        font = ImageFont.truetype(font_path, 28)
-    else:
-        font = ImageFont.load_default()
-    draw.text((50, 520), f"#{codigo}", fill="black", font=font)
+        fondo_postal.save(salida)
+        print(f"✅ Postal guardada como: {salida}")
 
-    # Guardar postal con nuevo nombre
-    salida = os.path.join(carpeta, f"postcard_final_{nombre_imagen}")
-    fondo.save(salida)
-    print(f"✅ Postal guardada: {salida} con código #{codigo}")
+        # ✅ Guardar en archivo JSON
+        codigos[codigo] = f"postcard_final_{imagen}"
+        with open(json_codigos, "w") as f:
+            json.dump(codigos, f)
+
+    except Exception as e:
+        print(f"❌ Error con {imagen}: {e}")

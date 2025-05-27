@@ -1,4 +1,5 @@
 from flask import Flask, send_from_directory, render_template_string, request, redirect
+from flask import request
 import os
 import re
 
@@ -133,18 +134,20 @@ def ver_postal(cliente, imagen):
     """
     return html
 
-@app.route('/buscar')
-def buscar_codigo():
-    codigo = request.args.get("codigo", "").lower().strip()
-    codigo = re.sub(r'^#+', '', codigo)  # Eliminar uno o más # al inicio
-
-    cliente = "cliente123"
-    ruta = os.path.join(CARPETA_GALERIAS, cliente)
-    for archivo in os.listdir(ruta):
-        if archivo.lower().endswith(".jpg") and archivo.startswith(f"postcard_final_{codigo}"):
-            return redirect(f"/postal/{cliente}/{archivo}")
-
-    return "<h1 style='color:red;'>❌ Código no encontrado</h1>", 404
+@app.route("/buscar")
+def buscar():
+    codigo = request.args.get("codigo", "").strip()
+    try:
+        with open("codigos.json", "r") as f:
+            codigos = json.load(f)
+        if codigo in codigos:
+            imagen = codigos[codigo]
+            cliente = "cliente123"
+            return redirect(f"/postal/{cliente}/{imagen}")
+        else:
+            return "<h1 style='color:red'>❌ Código no encontrado</h1>"
+    except:
+        return "<h1 style='color:red'>❌ Error al buscar el código</h1>"
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
