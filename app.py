@@ -1,4 +1,5 @@
 from flask import Flask, send_from_directory, render_template_string, request, redirect
+from urllib.parse import quote
 from flask import request
 import os
 import re
@@ -84,7 +85,7 @@ def galeria(cliente):
         </div>
         <p style="color:gray;">Toca una postal, mantenla presionada y guárdala en tu galería 📅</p>
         <div class="galeria">
-          {"".join(f"<a href='/postal/{cliente}/{img}'><div class='postal'><img src='/galeria/{cliente}/{img}'></div></a>" for img in imagenes)}
+          {"".join(f"<a href='/postal/{cliente}/{quote(img)}'><div class='postal'><img src='/galeria/{cliente}/{quote(img)}'></div></a>" for img in imagenes)}
         </div>
       </body>
     </html>
