@@ -11,6 +11,7 @@ def push_changes():
     os.system("git add .")
     os.system("git commit -m \"Auto update\"")
     os.system("git push")
+    os.system("python generar_galeria.py")
 
 print("⏳ Observando la carpeta para detectar nuevos archivos...")
 prev = get_files()
@@ -24,3 +25,4 @@ while True:
         prev = curr
     else:
         print("🕓 Sin cambios...")
+	

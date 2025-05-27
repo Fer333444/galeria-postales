@@ -1,42 +1,32 @@
 from PIL import Image
-import qrcode
-import socket
 import os
 
+# Rutas
 carpeta = "galerias/cliente123"
-fondo = os.path.join(carpeta, "postal.jpg")
-x, y = 110, 200     # la empuja más a la izquierda y arriba
-w, h = 520, 680     # la hace más ancha y más alta    # más ancho y más alto    # más ancha y más alta
-imagenes = [
-    ("pixel.jpg", "PIXEL ART"),
-    ("dragon.jpg", "DRAGON BALL"),
-    ("animado.jpg", "ESTILO ANIMADO"),
-    ("puente.jpg", "PUENTE DOURO"),
-    ("tv.jpg", "FÚTBOL EN CASA")  # 👈 nueva imagen
-]
+plantilla = os.path.join(carpeta, "postal.jpg")
 
-def obtener_ip_local():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    ip = s.getsockname()[0]
-    s.close()
-    return ip
+# Posición y tamaño de la foto dentro del postcard
+x, y = 110, 200
+w, h = 520, 680
 
-for nombre, estilo in imagenes:
-    try:
-        ruta_img = os.path.join(carpeta, nombre)
-        salida = os.path.join(carpeta, f"postcard_final_{nombre}")
-        base = Image.open(fondo).convert("RGB")
-        foto = Image.open(ruta_img).convert("RGB").resize((w, h), Image.LANCZOS)
-        base.paste(foto, (x, y))
-        base.save(salida)
-        print(f"✅ Postal generada: {salida}")
+# Abrimos la plantilla base una vez
+for archivo in os.listdir(carpeta):
+    if archivo.lower().endswith(".jpg") and not archivo.startswith("postcard_final") and archivo != "postal.jpg":
+        nombre_final = f"postcard_final_{archivo}"
+        ruta_final = os.path.join(carpeta, nombre_final)
 
-        ip = obtener_ip_local()
-        url = f"http://{ip}:5000/postal/cliente123/postcard_final_{nombre}"
-        qr = qrcode.make(url)
-        qr.save(f"qr_{nombre.replace('.jpg','.png')}")
-        print(f"🔗 QR generado: {url}")
+        if os.path.exists(ruta_final):
+            continue  # Ya fue generado
 
-    except Exception as e:
-        print(f"❌ Error con {nombre}: {e}")
+        print(f"🖼️ Generando postal de: {archivo}")
+
+        try:
+            fondo = Image.open(plantilla).convert("RGB")
+            imagen = Image.open(os.path.join(carpeta, archivo)).convert("RGB")
+            imagen = imagen.resize((w, h))
+
+            fondo.paste(imagen, (x, y))
+            fondo.save(ruta_final)
+            print(f"✅ Postal guardada como: {nombre_final}")
+        except Exception as e:
+            print(f"❌ Error con {archivo}: {e}")
