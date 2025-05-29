@@ -6,7 +6,7 @@ import re
 app = Flask(__name__)
 
 # ✅ Ruta absoluta completa
-CARPETA_GALERIAS = "C:/Users/stmeg/OneDrive/Desktop/FOTOS_QR_CLEAN 2/galerias"
+CARPETA_GALERIAS = os.path.join(os.path.dirname(__file__), "galerias")
 
 @app.route('/buscar')
 def buscar_codigo():
