@@ -1,11 +1,13 @@
 from flask import Flask, send_from_directory, render_template_string, request, redirect
 from urllib.parse import quote, unquote
-from flask import request
 import os
 import re
 
 app = Flask(__name__)
-CARPETA_GALERIAS = "galerias"
+
+# ✅ Ruta absoluta completa
+CARPETA_GALERIAS = "C:/Users/stmeg/OneDrive/Desktop/FOTOS_QR_CLEAN 2/galerias"
+
 @app.route('/buscar')
 def buscar_codigo():
     codigo = request.args.get("codigo", "").replace("#", "").strip()
@@ -25,7 +27,7 @@ def inicio():
 
 @app.route('/galeria/<cliente>')
 def galeria(cliente):
-    carpeta = os.path.join("galerias", cliente)
+    carpeta = os.path.join(CARPETA_GALERIAS, cliente)
     if not os.path.exists(carpeta):
         return f"<h1>Galería '{cliente}' no encontrada</h1>", 404
 
